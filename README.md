@@ -2,7 +2,8 @@
   
 # 🛡️ PhishGuard AI
 
-### AI-Powered Phishing URL Detection System
+### AI-Powered Phishing URL Detection System  
+**Developed by [Shardul Mane](https://github.com/ShardulMane20), Neeraj Sharma & Shivam Gokhale**
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)](https://flask.palletsprojects.com/)
@@ -22,33 +23,33 @@ PhishGuard AI is an advanced machine learning system designed to detect phishing
 
 ### ✨ Key Features
 
-- 🚀 **Real-Time Analysis**: Get results in under 100ms
-- 🎯 **High Accuracy**: 99.2% accuracy rate with minimal false positives
-- 🔍 **Comprehensive**: Analyzes 40+ URL features
-- 🌐 **Easy to Use**: Simple web interface and RESTful API
-- 📊 **Batch Processing**: Analyze up to 100 URLs simultaneously
-- 🔒 **Privacy-Focused**: No URL logging or data storage
+- 🚀 **Real-Time Analysis**: Get results in under 100ms  
+- 🎯 **High Accuracy**: 99.2% accuracy rate with minimal false positives  
+- 🔍 **Comprehensive**: Analyzes 40+ URL features  
+- 🌐 **Easy to Use**: Simple web interface and RESTful API  
+- 📊 **Batch Processing**: Analyze up to 100 URLs simultaneously  
+- 🔒 **Privacy-Focused**: No URL logging or data storage  
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Backend
-- **Python 3.10+**: Core programming language
-- **Flask 3.0**: Web framework
-- **scikit-learn**: Machine learning library
-- **XGBoost**: Gradient boosting framework
-- **Pandas & NumPy**: Data processing
+- **Python 3.10+**: Core programming language  
+- **Flask 3.0**: Web framework  
+- **scikit-learn**: Machine learning library  
+- **XGBoost**: Gradient boosting framework  
+- **Pandas & NumPy**: Data processing  
 
 ### Frontend
-- **HTML5 & CSS3**: Modern web standards
-- **JavaScript (ES6+)**: Interactive functionality
-- **Custom CSS**: Glassmorphism design
+- **HTML5 & CSS3**: Modern web standards  
+- **JavaScript (ES6+)**: Interactive functionality  
+- **Custom CSS**: Glassmorphism design  
 
 ### Machine Learning
-- **Models**: XGBoost, Random Forest, Gradient Boosting
-- **Features**: 40+ URL-based features
-- **Accuracy**: 99.2%
+- **Models**: XGBoost, Random Forest, Gradient Boosting  
+- **Features**: 40+ URL-based features  
+- **Accuracy**: 99.2%  
 
 ---
 
@@ -56,8 +57,8 @@ PhishGuard AI is an advanced machine learning system designed to detect phishing
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- pip package manager
+- Python 3.10 or higher  
+- pip package manager  
 
 ### Quick Start
 
