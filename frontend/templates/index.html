@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered phishing URL detection system with 99.2% accuracy. Protect yourself from malicious websites with real-time analysis.">
+    <meta name="keywords" content="phishing detection, URL security, AI security, cybersecurity, machine learning">
+    <title>PhishGuard AI - AI-Powered Phishing Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-shield-alt"></i>
+                <span>PhishGuard AI</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/batch">Batch Check</a></li>
+                <li><a href="/about">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title fade-in">
+                    <i class="fas fa-shield-alt"></i>
+                    Protect Yourself from Phishing
+                </h1>
+                <p class="hero-subtitle fade-in-delay">
+                    Advanced AI-powered URL analysis to detect malicious websites in real-time
+                </p>
+                
+                <!-- Stats -->
+                <div class="stats-grid fade-in-delay-2">
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="stat-number">99.2%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-bolt"></i>
+                        <div class="stat-number">&lt;100ms</div>
+                        <div class="stat-label">Analysis Time</div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- URL Checker Card -->
+            <div class="checker-card slide-up">
+                <div class="card-header">
+                    <h2><i class="fas fa-search"></i> Check URL Security</h2>
+                    <p>Enter any URL to analyze for potential phishing threats using our AI model</p>
+                </div>
+                
+                <form id="urlForm" class="url-form">
+                    <div class="input-group">
+                        <i class="fas fa-link input-icon"></i>
+                        <input 
+                            type="text" 
+                            id="urlInput" 
+                            placeholder="https://example.com or example.com" 
+                            required
+                            autocomplete="off"
+                            aria-label="Enter URL to check"
+                        >
+                        <button type="submit" class="btn btn-primary btn-large" id="checkBtn">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Analyze URL</span>
+                        </button>
+                    </div>
+                    <div class="quick-actions">
+                        <button type="button" class="btn-link" onclick="testBenignURL()" title="Test with a safe URL">
+                            <i class="fas fa-check"></i> Try Safe URL
+                        </button>
+                        <button type="button" class="btn-link" onclick="testPhishingURL()" title="Test with a phishing URL">
+                            <i class="fas fa-exclamation-triangle"></i> Try Phishing URL
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="loading-state hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing URL with AI...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="results-section hidden">
+                    <!-- Result Header -->
+                    <div id="resultHeader" class="result-header">
+                        <div class="result-icon-wrapper">
+                            <i id="resultIcon" class="result-icon"></i>
+                        </div>
+                        <div class="result-info">
+                            <h3 id="resultTitle"></h3>
+                            <p id="resultURL" class="result-url"></p>
+                        </div>
+                    </div>
+
+                    <!-- Risk Level -->
+                    <div id="riskLevel" class="risk-level">
+                        <div class="risk-badge">
+                            <span id="riskLabel"></span>
+                        </div>
+                        <div class="confidence-score">
+                            <span id="confidenceValue"></span>
+                            <span class="confidence-label">Confidence</span>
+                        </div>
+                    </div>
+
+                    <!-- Probability Chart -->
+                    <div class="probability-section">
+                        <h4><i class="fas fa-chart-bar"></i> Prediction Probabilities</h4>
+                        <div class="probability-bars">
+                            <div class="prob-bar-container">
+                                <div class="prob-label">
+                                    <span><i class="fas fa-check-circle" style="color: #10b981;"></i> Benign (Safe)</span>
+                                    <span id="benignProb" class="prob-value">0%</span>
+                                </div>
+                                <div class="prob-bar">
+                                    <div id="benignBar" class="prob-fill benign" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                            <div class="prob-bar-container">
+                                <div class="prob-label">
+                                    <span><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> Phishing (Malicious)</span>
+                                    <span id="phishingProb" class="prob-value">0%</span>
+                                </div>
+                                <div class="prob-bar">
+                                    <div id="phishingBar" class="prob-fill phishing" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Insights -->
+                    <div class="insights-section">
+                        <h4><i class="fas fa-lightbulb"></i> Detailed Analysis</h4>
+                        
+                        <!-- Suspicious Indicators -->
+                        <div id="suspiciousInsights" class="insight-group hidden">
+                            <h5><i class="fas fa-exclamation-circle"></i> ⚠️ Suspicious Indicators</h5>
+                            <ul id="suspiciousList" class="insight-list warning"></ul>
+                        </div>
+
+                        <!-- Safe Indicators -->
+                        <div id="safeInsights" class="insight-group hidden">
+                            <h5><i class="fas fa-check-circle"></i> ✓ Safe Indicators</h5>
+                            <ul id="safeList" class="insight-list success"></ul>
+                        </div>
+
+                        <!-- URL Information -->
+                        <div id="neutralInsights" class="insight-group">
+                            <h5><i class="fas fa-info-circle"></i> ℹ️ URL Information</h5>
+                            <ul id="neutralList" class="insight-list info"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="checkAnother()">
+                            <i class="fas fa-redo"></i> Check Another URL
+                        </button>
+                        <button class="btn btn-outline" onclick="exportReport()">
+                            <i class="fas fa-download"></i> Export Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <section class="features-section">
+                <h2 class="section-title">How PhishGuard AI Works</h2>
+                <div class="features-grid">
+                    <div class="feature-card stagger-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>AI-Powered Analysis</h3>
+                        <p>Advanced machine learning algorithms trained on millions of URLs to detect sophisticated phishing patterns with high accuracy</p>
+                    </div>
+                    <div class="feature-card stagger-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h3>Real-Time Detection</h3>
+                        <p>Lightning-fast analysis with results in under 100 milliseconds, protecting you before you click that suspicious link</p>
+                    </div>
+                    <div class="feature-card stagger-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3>Multi-Feature Analysis</h3>
+                        <p>Comprehensive examination of 40+ features including URL structure, domain characteristics, and security indicators</p>
+                    </div>
+                    <div class="feature-card stagger-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-virus"></i>
+                        </div>
+                        <h3>Advanced Protection</h3>
+                        <p>Detects sophisticated phishing attempts and zero-day attacks that traditional URL filters and blacklists might miss</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Warning Section -->
+            
+
+            <!-- Quick Tips Section -->
+            <section class="features-section">
+                <h2 class="section-title">Phishing Protection Tips</h2>
+                <div class="tips-grid">
+                    <div class="tip-card stagger-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3>Check the URL</h3>
+                        <p>Look for misspellings, extra characters, or suspicious domains before clicking any link</p>
+                    </div>
+                    <div class="tip-card stagger-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>Verify HTTPS</h3>
+                        <p>Ensure sensitive sites use HTTPS, but remember: phishing sites can have SSL too</p>
+                    </div>
+                    <div class="tip-card stagger-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Beware of Emails</h3>
+                        <p>Never click links in unexpected emails, especially those claiming urgency or threats</p>
+                    </div>
+                    <div class="tip-card stagger-item">
+                        <div class="tip-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3>Use AI Tools</h3>
+                        <p>Leverage tools like PhishGuard AI to verify suspicious URLs before visiting them</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-shield-alt"></i> PhishGuard AI</h4>
+                    <p>Protecting users from phishing attacks with cutting-edge artificial intelligence and machine learning technology</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/batch">Batch Checker</a></li>
+                        <li><a href="/about">About</a></li>
+                    </ul>
+                </div>
+                
+                
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 PhishGuard AI. Built with ❤️ and Machine Learning for Cybersecurity.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.875rem;">Developed by: Shardul Mane (4078), Neeraj Sharma (4069), Shivam Gokhale (4065)</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Analyze multiple URLs at once for phishing threats. Batch URL security checking with AI-powered detection.">
+    <title>Batch URL Checker - PhishGuard AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="nav-brand">
+                <i class="fas fa-shield-alt"></i>
+                <span>PhishGuard AI</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/batch" class="active">Batch Check</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="https://github.com" target="_blank" rel="noopener"><i class="fab fa-github"></i></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header fade-in">
+                <h1><i class="fas fa-list-check"></i> Batch URL Checker</h1>
+                <p>Analyze multiple URLs at once for efficient security scanning (up to 100 URLs)</p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="checker-card slide-up">
+                <div class="batch-input-methods">
+                    <div class="method-tabs">
+                        <button class="tab-btn active" data-tab="paste">
+                            <i class="fas fa-paste"></i> Paste URLs
+                        </button>
+                        <button class="tab-btn" data-tab="upload">
+                            <i class="fas fa-file-upload"></i> Upload File
+                        </button>
+                    </div>
+
+                    <!-- Paste Method -->
+                    <div id="pasteTab" class="tab-content active">
+                        <form id="batchForm">
+                            <div class="form-group">
+                                <label for="urlsTextarea">
+                                    <i class="fas fa-link"></i> Enter URLs (one per line)
+                                </label>
+                                <textarea 
+                                    id="urlsTextarea" 
+                                    rows="12" 
+                                    placeholder="https://example1.com&#10;https://example2.com&#10;https://example3.com&#10;&#10;Enter up to 100 URLs..."
+                                    aria-label="Enter URLs to check"
+                                ></textarea>
+                                <div class="textarea-info">
+                                    <span id="urlCount" style="color: var(--primary-light); font-weight: 600;">0 URLs</span>
+                                    <span class="info-text">Maximum 100 URLs allowed</span>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <button type="submit" class="btn btn-primary btn-large">
+                                    <i class="fas fa-play-circle"></i>
+                                    <span>Analyze All URLs</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Upload Method -->
+                    <div id="uploadTab" class="tab-content">
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Drop file here or click to upload</h3>
+                            <p>Supported formats: .txt, .csv (one URL per line, max 100 URLs)</p>
+                            <input type="file" id="fileInput" accept=".txt,.csv" hidden>
+                            <button type="button" class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
+                                <i class="fas fa-folder-open"></i> Choose File
+                            </button>
+                        </div>
+                        <div id="fileInfo" class="file-info hidden">
+                            <i class="fas fa-file-alt"></i>
+                            <span id="fileName"></span>
+                            <button type="button" class="btn-icon" onclick="clearFile()" title="Remove file">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="progressSection" class="progress-section hidden">
+                <div class="progress-card">
+                    <h3><i class="fas fa-spinner fa-spin"></i> Processing URLs...</h3>
+                    <p style="color: var(--gray-400); margin-bottom: var(--space-8);">Please wait while we analyze your URLs</p>
+                    <div class="progress-stats">
+                        <div class="stat">
+                            <span class="stat-value" id="processedCount">0</span>
+                            <span class="stat-label">Processed</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="totalCount">0</span>
+                            <span class="stat-label">Total</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="percentComplete">0%</span>
+                            <span class="stat-label">Complete</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-large">
+                        <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="batchResults" class="batch-results hidden">
+                <!-- Summary -->
+                <div class="results-summary fade-in">
+                    <h2><i class="fas fa-chart-pie"></i> Analysis Summary</h2>
+                    <div class="summary-grid">
+                        <div class="summary-card total">
+                            <i class="fas fa-list"></i>
+                            <div class="summary-value" id="summaryTotal">0</div>
+                            <div class="summary-label">Total URLs</div>
+                        </div>
+                        <div class="summary-card safe">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="summary-value" id="summarySafe">0</div>
+                            <div class="summary-label">Benign (Safe)</div>
+                        </div>
+                        <div class="summary-card danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div class="summary-value" id="summaryPhishing">0</div>
+                            <div class="summary-label">Phishing (Threat)</div>
+                        </div>
+                        <div class="summary-card error">
+                            <i class="fas fa-times-circle"></i>
+                            <div class="summary-value" id="summaryErrors">0</div>
+                            <div class="summary-label">Errors</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter & Export -->
+                <div class="results-controls">
+                    <div class="filter-group">
+                        <label><i class="fas fa-filter"></i> Filter Results:</label>
+                        <select id="filterSelect" onchange="filterResults()">
+                            <option value="all">All Results</option>
+                            <option value="phishing">Phishing Only</option>
+                            <option value="benign">Benign Only</option>
+                            <option value="errors">Errors Only</option>
+                        </select>
+                    </div>
+                    <div class="export-buttons">
+                        <button class="btn btn-secondary" onclick="exportCSV()" title="Export as CSV">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportJSON()" title="Export as JSON">
+                            <i class="fas fa-file-code"></i> Export JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <div class="results-table-container">
+                    <table class="results-table" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th style="min-width: 300px;">URL</th>
+                                <th style="width: 120px;">Status</th>
+                                <th style="width: 120px;">Risk Level</th>
+                                <th style="width: 100px;">Confidence</th>
+                                <th style="width: 100px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Actions -->
+                <div class="batch-actions">
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <i class="fas fa-redo"></i> Analyze More URLs
+                    </button>
+                    <button class="btn btn-outline" onclick="window.location.href='/'">
+                        <i class="fas fa-arrow-left"></i> Back to Single Check
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 PhishGuard AI. Built with ❤️ and Machine Learning for Cybersecurity.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.875rem;">Developed by: Shardul Mane (4078), Neeraj Sharma (4069), Shivam Gokhale (4065)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Detail View -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle"><i class="fas fa-info-circle"></i> URL Details</h3>
+                <button class="modal-close" onclick="closeModal()" aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                
+                // Update active states
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(tab + 'Tab').classList.add('active');
+            });
+        });
+
+        // URL counter with color coding
+        document.getElementById('urlsTextarea').addEventListener('input', (e) => {
+            const urls = e.target.value.split('\n').filter(line => line.trim());
+            const counter = document.getElementById('urlCount');
+            counter.textContent = `${urls.length} URLs`;
+            
+            // Color code based on count
+            if (urls.length > 100) {
+                counter.style.color = 'var(--danger-color)';
+            } else if (urls.length > 80) {
+                counter.style.color = 'var(--warning-color)';
+            } else {
+                counter.style.color = 'var(--primary-light)';
+            }
+        });
+
+        // File upload handlers
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            // Validate file type
+            if (!file.name.endsWith('.txt') && !file.name.endsWith('.csv')) {
+                showNotification('Please upload a .txt or .csv file', 'error');
+                return;
+            }
+
+            // Validate file size (max 1MB)
+            if (file.size > 1024 * 1024) {
+                showNotification('File too large. Maximum 1MB allowed', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target.result;
+                document.getElementById('urlsTextarea').value = content;
+                
+                // Show file info
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileInfo').classList.remove('hidden');
+                document.getElementById('uploadArea').classList.add('hidden');
+                
+                // Update count
+                const urls = content.split('\n').filter(line => line.trim());
+                const counter = document.getElementById('urlCount');
+                counter.textContent = `${urls.length} URLs`;
+                
+                if (urls.length > 100) {
+                    counter.style.color = 'var(--danger-color)';
+                    showNotification(`Warning: ${urls.length} URLs detected. Maximum 100 allowed.`, 'warning');
+                }
+                
+                // Switch to paste tab
+                document.querySelector('[data-tab="paste"]').click();
+            };
+            reader.onerror = () => {
+                showNotification('Error reading file', 'error');
+            };
+            reader.readAsText(file);
+        }
+
+        function clearFile() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInfo').classList.add('hidden');
+            document.getElementById('uploadArea').classList.remove('hidden');
+        }
+
+        // Batch form submission
+        document.getElementById('batchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await analyzeBatchURLs();
+        });
+    </script>
+</body>
+</html>
