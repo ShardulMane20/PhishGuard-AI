@@ -3,7 +3,7 @@
 # 🛡️ PhishGuard AI
 
 ### AI-Powered Phishing URL Detection System  
-**Developed by [Shardul Mane], Neeraj Sharma & Shivam Gokhale**
+**Developed by Shardul Mane, Neeraj Sharma & Shivam Gokhale**
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)](https://flask.palletsprojects.com/)
